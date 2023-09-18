@@ -19,3 +19,8 @@ spec:
           env:
             - name: ALLOWED_HOSTS
               value: "ae62138962e3d41348c38c98467f7dc7-408493656.us-east-2.elb.amazonaws.com"
+            - name: SECRET_KEY_BASE
+              valueFrom:
+                secretKeyRef:
+                  name: supersecret
+                  key: SECRET_KEY_BASE

@@ -37,6 +37,12 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
+      - name: Run asset precompilation
+        run: bundle exec rake assets:precompile
+        env:
+          RAILS_ENV: production
+          SECRET_KEY_BASE: ${{ secrets.SECRET_KEY_BASE }}
+
       - name: Build and push Docker image
         uses: docker/build-push-action@v2
         with:
