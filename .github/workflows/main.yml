@@ -23,6 +23,8 @@ jobs:
         run: bundle exec rails test
         env:
           RAILS_ENV: test
+          OPEN_WEATHER_API_KEY: ${{ secrets.OPEN_WEATHER_API_KEY }}
+          GOOGLE_PLACES_API_KEY: ${{ secrets.GOOGLE_PLACES_API_KEY }}
 
       - name: Login to Amazon ECR
         id: login-ecr
