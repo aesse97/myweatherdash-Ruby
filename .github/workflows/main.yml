@@ -19,10 +19,10 @@ jobs:
       - name: Install dependencies
         run: bundle install
 
-      - name: Run tests in production environment
+      - name: Run tests
         run: bundle exec rails test
         env:
-          RAILS_ENV: development
+          RAILS_ENV: test
 
       - name: Login to Amazon ECR
         id: login-ecr
