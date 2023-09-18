@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: weatherapp
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: weatherapp
+  template:
+    metadata:
+      labels:
+        app: weatherapp
+    spec:
+      containers:
+        - name: weatherapp
+          image: 395776234152.dkr.ecr.us-east-2.amazonaws.com/weatherapp:latest
+          imagePullPolicy: Always
+          env:
+            - name: ALLOWED_HOSTS
+              value: "ae62138962e3d41348c38c98467f7dc7-408493656.us-east-2.elb.amazonaws.com"

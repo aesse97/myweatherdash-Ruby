@@ -1,0 +1,47 @@
+name: Ruby on Rails CI/CD
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.2.2
+
+      - name: Install dependencies
+        run: bundle install
+
+      - name: Run tests
+        run: bundle exec rails test
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+        with:
+          access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          region: us-east-2
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          push: true
+          tags: 395776234152.dkr.ecr.us-east-2.amazonaws.com/weatherapp:latest
+
+      - name: Set up kubectl
+        run: echo ${{ secrets.KUBECONFIG }} | base64 --decode > $GITHUB_WORKSPACE/.kubeconfig
+
+      - name: Apply Kubernetes manifests
+        run: kubectl apply -f deployment.yaml --kubeconfig $GITHUB_WORKSPACE/.kubeconfig
+
+      - name: Deploy to Kubernetes
+        run: kubectl set image deployment/weatherapp weatherapp=395776234152.dkr.ecr.us-east-2.amazonaws.com/weatherapp:latest --kubeconfig $GITHUB_WORKSPACE/.kubeconfig

@@ -1,0 +1,106 @@
+<div id="particles-js"></div>
+
+<div class="container">
+  <h1 class="text-center mt-5">Weather Dashboard</h1>
+  <%= form_with(url: '/weather/dashboard', method: "get", local: true, html: { class: 'mb-4', id: 'weather-search-form' }) do %>
+    <div class="input-group">
+      <%= text_field_tag :location, params[:location], placeholder: "Enter a location", class: "form-control" %>
+      <button class="btn btn-secondary" id="use-geolocation" type="button">Use My Location</button>
+    </div>
+  <% end %>
+
+  <% if @weather_data %>
+    <!-- Tabs -->
+    <ul class="nav nav-tabs">
+      <li class="nav-item">
+        <a class="nav-link active" data-tab="current" onclick="openTab(event)">Current Weather</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" data-tab="hourly" onclick="openTab(event)">Hourly Forecast</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" data-tab="daily" onclick="openTab(event)">7-Day Forecast</a>
+      </li>
+    </ul>
+
+
+    <!-- Tab content -->
+    <div class="tab-content">
+      <div class="tab-pane container active" id="current">
+        <div class="card">
+          <div class="card-body">
+            <h5 id="current-weather-location" data-default="<%= @location_name %>">Current Weather in <%= @location_name %></h5>
+            <script type="text/javascript">
+                const storedLocationName = localStorage.getItem("locationName");
+                if (storedLocationName) {
+                    document.getElementById("current-weather-location").textContent = "Current Weather in " + storedLocationName;
+                }
+            </script>
+            <div class="row">
+              <div class="col">
+                <p><strong>Temperature:</strong> <%= @weather_data["current"]["temp"].round %>°F</p>
+                <p><strong>Feels Like:</strong> <%= @weather_data["current"]["feels_like"].round %>°F</p>
+                <p><strong>Weather:</strong> <%= @weather_data["current"]["weather"].first["description"].titleize %></p>
+              </div>
+              <div class="col">
+                <p><strong>Humidity:</strong> <%= @weather_data["current"]["humidity"] %> %</p>
+                <p><strong>Wind Speed:</strong> <%= @weather_data["current"]["wind_speed"] %> m/s</p>
+                <p><strong>Visibility:</strong> <%= @weather_data["current"]["visibility"] %> meters</p>
+              </div>
+              <div class="col">
+                <p><strong>Pressure:</strong> <%= @weather_data["current"]["pressure"] %> hPa</p>
+                <p><strong>UV Index:</strong> <%= @weather_data["current"]["uvi"] %></p>
+                <p><strong>Sunrise:</strong> <%= Time.at(@weather_data["current"]["sunrise"]).strftime("%H:%M:%S") %></p>
+                <p><strong>Sunset:</strong> <%= Time.at(@weather_data["current"]["sunset"]).strftime("%H:%M:%S") %></p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Hourly Forecast -->
+      <div class="tab-pane container" id="hourly">
+        <ul class="list-group">
+          <% @weather_data["hourly"].each_with_index do |hour, index| %>
+            <li class="list-group-item">
+              <div class="d-flex justify-content-between">
+                <div>
+                  <strong><%= Time.at(hour["dt"]).strftime("%-I %p") %></strong>
+                  <span class="ms-3"><%= hour["weather"].first["description"].titleize %></span>
+                </div>
+                <div>
+                  <span class="me-3"><%= hour["temp"].round %>°F</span>
+                  <%= image_tag "weather_icons/#{hour['weather'].first['description'].include?('cloud') ? 'clouds.png' : hour['weather'].first['description'].include?('rain') ? 'rain.png' : 'sun.png'}", alt: 'Weather Icon', class: 'weather-icon' %>
+                </div>
+              </div>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+
+      <!-- Daily Forecast -->
+      <div class="tab-pane container" id="daily">
+        <ul class="list-group">
+          <% @weather_data["daily"].each_with_index do |day, index| %>
+            <li class="list-group-item">
+              <div class="d-flex justify-content-between">
+                <div>
+                  <strong><%= Time.at(day["dt"]).strftime("%-m/%-d") %></strong>
+                  <span class="ms-3"><%= day["weather"].first["description"].titleize %></span>
+                </div>
+                <div>
+                  <span class="me-3"><%= day["temp"]["eve"].round %>°F</span>
+                  <%= image_tag "weather_icons/#{day['weather'].first['description'].include?('cloud') ? 'clouds.png' : day['weather'].first['description'].include?('rain') ? 'rain.png' : 'sun.png'}", alt: 'Weather Icon', class: 'weather-icon' %>
+                </div>
+              </div>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+  <% elsif @error %>
+    <div class="alert alert-danger" role="alert">
+      <%= @error %>
+    </div>
+  <% end %>
+</div>
+</div>
