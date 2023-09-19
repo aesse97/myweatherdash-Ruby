@@ -1,5 +1,4 @@
-<div id="particles-js"></div>
-
+<div class="center-wrapper">
 <div class="container">
   <h1 class="text-center mt-5">Weather Dashboard</h1>
   <%= form_with(url: '/weather/dashboard', method: "get", local: true, html: { class: 'mb-4', id: 'weather-search-form' }) do %>
@@ -102,5 +101,6 @@
       <%= @error %>
     </div>
   <% end %>
+</div>
 </div>
 </div>

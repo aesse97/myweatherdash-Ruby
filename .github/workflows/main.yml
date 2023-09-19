@@ -55,8 +55,8 @@ jobs:
 
       - name: Apply Kubernetes manifests
         run: |
-          kubectl apply -f deployment.yaml --kubeconfig $GITHUB_WORKSPACE/.kubeconfig
-          kubectl apply -f ingress.yaml --kubeconfig $GITHUB_WORKSPACE/.kubeconfig
+          kubectl apply -f k8/deployment.yaml --kubeconfig $GITHUB_WORKSPACE/.kubeconfig
+          kubectl apply -f k8/ingress.yaml --kubeconfig $GITHUB_WORKSPACE/.kubeconfig
 
       - name: Deploy to Kubernetes
         run: kubectl set image deployment/weatherapp weatherapp=395776234152.dkr.ecr.us-east-2.amazonaws.com/weatherapp:latest --kubeconfig $GITHUB_WORKSPACE/.kubeconfig
